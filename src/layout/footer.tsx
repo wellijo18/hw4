@@ -6,9 +6,9 @@ const { Footer } = Layout;
 
 const CustomFooter = () => {
     return (
-        <Footer style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#001529", color: "white", padding: "10px 0" }}>
+        <Footer style={{ display: "flex", alignItems: "center", justifyContent: "center", color: "black", padding: "10px 0" }}>
             <nav style={{ width: "100%", textAlign: "center" }}>
-                <p style={{ marginTop: "10px" }}>&copy; 2025 Spark! Bytes. All Rights Reserved.</p>
+                <p style={{ marginTop: "10px" }}> Spark! &copy;2023 Created by Spark!</p>
             </nav>
         </Footer>
     );

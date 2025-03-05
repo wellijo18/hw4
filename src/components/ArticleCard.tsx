@@ -1,34 +1,85 @@
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
-import { Card, Row, Col, Typography, Divider } from "antd";
+import { Typography } from "antd";
 import { Article } from "@/types/types";
 // This gets you access to the image for 404 fallback.
 // The href/source/url can be retrieved via image404.src
 import image404 from "../assets/404.png";
 
+const { Title, Paragraph } = Typography;
+
 interface ArticleCardProps {
-  article: Article;
+    article: Article;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => (
-  /**
-   * This component renders a single article. It takes as input an article object.
-   * You should read the Antd documentation to figure out how to build this.
-   * You should not use the Next.js Image component, instead use a regular img tag.
-   * You will need to handle 404s for images, you can use the image404 variable above.
-   * Don't forget to format the date correctly
-   *
-   * You should display the following information:
-   * 1. Title
-   * 2. Image
-   * 3. Summary
-   * 4. Published At
-   *
-   * When you click on this component, it should take you to the article's url(same tab or different is fine).
-   *
-   * Don't forget that you need to add a unique key prop to each ArticleCard.
-   */
-  <div>build me</div>
-);
+const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
+
+    const smallTitle = article.title.slice(0, 3);
+
+    const formattedDate = new Date(article.published_at).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+
+    return (
+        <div
+            style={{
+                width: "300px",
+                margin: "1rem",
+                border: "1px solid #e8e8e8",
+                borderRadius: "8px",
+                padding: "1rem",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+            }}
+            onClick={() => window.open(article.url)}
+        >
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "1rem",
+                }}
+            >
+                <Title style={{ marginBottom: 0, fontSize: "1rem", fontWeight: "bold" }}>
+                    {smallTitle}
+                </Title>
+                <Paragraph style={{ marginBottom: 0, fontSize: "0.9rem" }}>
+                    {formattedDate}
+                </Paragraph>
+            </div>
+
+            <div
+                style={{
+                    width: "100%",
+                    height: "200px",
+                    overflow: "hidden",
+                    borderRadius: "8px",
+                    marginBottom: "1rem",
+                }}
+            >
+                <img
+                    src={article.image_url || image404.src}
+                    alt={article.title}
+                    onError={(e) => (e.currentTarget.src = image404.src)}
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                    }}
+                />
+            </div>
+            <div>
+                <Title style={{fontSize: "1.5rem"}}>{article.title}</Title>
+            </div>
+            <div>
+                <Paragraph>{article.summary}</Paragraph>
+            </div>
+        </div>
+    );
+};
 
 export default ArticleCard;
