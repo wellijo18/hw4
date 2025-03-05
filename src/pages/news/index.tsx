@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Divider, Typography, Pagination, Switch, Table } from "antd";
-import { Article } from "@/types/types"; // Adjust the import based on your structure
-import ArticleCard from "@/components/ArticleCard"; // Assuming this is the correct path for your component
+import { Article } from "@/types/types";
+import ArticleCard from "@/components/ArticleCard";
+import ArticleStatistics from "@/components/ArticleStatistics"; // Import the ArticleStatistics component
 
 const { Title } = Typography;
 
@@ -12,12 +13,6 @@ const NewsPage: React.FC = () => {
     const [pageSize, setPageSize] = useState<number>(10);
     const [totalArticles, setTotalArticles] = useState<number>(0);
 
-    // State for Unique News Sources
-    const [uniqueNewsSources, setUniqueNewsSources] = useState<string[]>([]);
-    // State for Date Range and Featured Articles
-    const [dateRange, setDateRange] = useState<{ start: string; end: string }>({ start: '', end: '' });
-    const [featuredArticlesCount, setFeaturedArticlesCount] = useState<number>(0);
-
     useEffect(() => {
         fetch(
             `https://api.spaceflightnewsapi.net/v4/articles/?limit=${pageSize}&page=${currentPage}&ordering=-published_at`
@@ -27,22 +22,6 @@ const NewsPage: React.FC = () => {
                 if (data.results) {
                     setArticles(data.results);
                     setTotalArticles(data.count);
-
-                    // Extract unique news sources
-                    const sources = Array.from(
-                        new Set(data.results.map((article: Article) => article.news_site))
-                    );
-                    setUniqueNewsSources(sources);
-
-                    // Calculate the Date Range of Articles
-                    const allDates = data.results.map((article: Article) => new Date(article.published_at));
-                    const minDate = new Date(Math.min(...allDates));
-                    const maxDate = new Date(Math.max(...allDates));
-                    setDateRange({ start: minDate.toLocaleDateString(), end: maxDate.toLocaleDateString() });
-
-                    // Count the number of featured articles
-                    const featuredCount = data.results.filter((article: Article) => article.featured).length;
-                    setFeaturedArticlesCount(featuredCount);
                 }
             })
             .catch((e: Error) => console.log("Error fetching articles: " + e));
@@ -105,63 +84,6 @@ const NewsPage: React.FC = () => {
         />
     );
 
-    const uniqueSourcesTable = (
-        <Table
-            dataSource={uniqueNewsSources.map((source) => ({ key: source, name: source }))}
-            rowKey="key"
-            pagination={false}
-            columns={[
-                {
-                    title: "Unique News Sources",
-                    dataIndex: "name",
-                    key: "name",
-                    render: (text: string) => <div style={{ textAlign: "left" }}>{text}</div>,
-                },
-            ]}
-        />
-    );
-
-    const dateRangeTable = (
-        <Table
-            dataSource={[
-                { key: 'earliest', label: 'Earliest: ', date: dateRange.start },
-                { key: 'latest', label: 'Latest: ', date: dateRange.end }
-            ]}
-            rowKey="key"
-            pagination={false}
-            columns={[
-                {
-                    title: "Date Range of Articles",
-                    dataIndex: "label",
-                    key: "label",
-                    render: (text: string) => <div style={{ textAlign: "left" }}>{text}</div>,
-                },
-                {
-                    title: "",
-                    dataIndex: "date",
-                    key: "date",
-                    render: (text: string) => <div style={{ textAlign: "left" }}>{text}</div>,
-                },
-            ]}
-        />
-    );
-
-    const featuredArticlesTable = (
-        <Table
-            dataSource={[{ key: 'featured', count: featuredArticlesCount }]}
-            rowKey="key"
-            pagination={false}
-            columns={[
-                {
-                    title: "Featured Articles",
-                    dataIndex: "count",
-                    key: "count",
-                    render: (text: number) => <div style={{ textAlign: "left" }}>{text}</div>,
-                },
-            ]}
-        />
-    );
-
     return (
         <>
             <div style={{ width: "100%", textAlign: "center" }}>
@@ -196,9 +118,7 @@ const NewsPage: React.FC = () => {
                             marginBottom: "20px",
                         }}
                     >
-                        <div>{uniqueSourcesTable}</div>
-                        <div>{dateRangeTable}</div>
-                        <div>{featuredArticlesTable}</div>
+                        <ArticleStatistics articles={articles} />
                     </div>
                 </div>
 

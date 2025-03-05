@@ -1,6 +1,6 @@
 import React from "react";
 import { Table } from "antd";
-import { Article } from "@/types/types";
+import { Article } from "./types/types";
 
 interface ArticleTableProps {
   articles: Article[];
@@ -8,15 +8,39 @@ interface ArticleTableProps {
 }
 
 const ArticleTable: React.FC<ArticleTableProps> = ({ articles, loading }) => {
-  /**
-   * This component renders a table of articles. It takes as input an array of articles and a boolean indicating whether the table is loading.
-   * You should use the Antd Table component to build this.
-   * No data manipulation is needed here.
-   * You will need to write a custom render function for the "published_at" column to format the date.
-   *
-   */
+  const columns = [
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+      render: (text: string) => <div style={{ textAlign: "left" }}>{text}</div>,
+    },
+    {
+      title: "News Source",
+      dataIndex: "news_site",
+      key: "news_site",
+      render: (text: string) => <div style={{ textAlign: "left" }}>{text}</div>,
+    },
+    {
+      title: "Published Date",
+      dataIndex: "published_at",
+      key: "published_at",
+      render: (text: string) => new Date(text).toLocaleDateString(),
+    },
+  ];
 
-  return <div>Build me</div>;
+  return (
+      <Table
+          dataSource={articles}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+          }}
+      />
+  );
 };
 
 export default ArticleTable;
